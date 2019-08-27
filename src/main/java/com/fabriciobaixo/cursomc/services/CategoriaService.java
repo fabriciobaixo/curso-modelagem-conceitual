@@ -3,10 +3,12 @@ package com.fabriciobaixo.cursomc.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.fabriciobaixo.cursomc.domain.Categoria;
 import com.fabriciobaixo.cursomc.repositories.CategoriaRepository;
+import com.fabriciobaixo.cursomc.services.exceptions.DataIntegrationException;
 import com.fabriciobaixo.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -31,14 +33,14 @@ public class CategoriaService {
 		return repo.save(obj);
 	}
 	
-	/*public Categoria update(Categoria obj) {
-		Categoria newObj = findById(obj.getId()); 
-		updateData(newObj, obj);
-		return repo.save(newObj);
+	public void delete (Integer id) {
+		find(id);
+		try {
+			repo.deleteById(id);
 		}
-	
-	private void updateData(Categoria newObj, Categoria obj) {		
-		newObj.setNome(obj.getNome());
-		newObj.setProdutos(obj.getProdutos());
-	}*/
+		catch(DataIntegrityViolationException e){
+			throw new DataIntegrationException("Não é possível excluir uma categoria que possui produtos");
+		}
+		
+	}
 }
